@@ -12,6 +12,8 @@ import { Botao } from '../botao'
 export const Input = ({finalValue,placeholder}:any) => {
 
     const [valor,setValor] = useState(placeholder)
+    const [holding,setHolding] = useState(placeholder)
+
 
 
   return (

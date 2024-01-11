@@ -18,7 +18,7 @@ export const NewTask:React.FC<functions> = ({getTarefaAdicionavel}) => {
   return (
     <div>
       <Form novaTarefa={(valor:string)=>getTarefaAdicionavel(valor)}></Form>
-      <Task></Task>
+
     </div>
 
   )
