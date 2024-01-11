@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { NewTask } from './componentes/novaTarefa'
+import Task from './componentes/newTask/task'
 
   interface setting{
     setter: (arg:string) => void
@@ -10,10 +11,12 @@ import { NewTask } from './componentes/novaTarefa'
 const Home:React.FC<setting> = () => {
 
   const [tarefa,setTarefa] = useState<string>("")
+  const [listaTarefa,setListaTarefa] = useState<string[]>([])
 
 
   const setter = (valor:string)=>{
     setTarefa(valor)
+    setListaTarefa([...listaTarefa,valor])
   }
 
 
@@ -26,6 +29,11 @@ const Home:React.FC<setting> = () => {
 
       <div className='display-flex justify-center flex-col items-center w-[70vw]'>
         <NewTask getTarefaAdicionavel={(valor:string)=> ()=>  setter(valor)}></NewTask>
+        {
+          listaTarefa.map((tarefa,index) =>{
+            return <Task key={index} conteudo={tarefa}></Task>
+          })
+        }
       </div>
     </div>
   )
