@@ -8,6 +8,8 @@ import Task from './componentes/newTask/task'
     setter: (arg:string) => void
   }
 
+
+ 
 const Home:React.FC<setting> = () => {
 
   const [tarefa,setTarefa] = useState<string>("")
@@ -17,6 +19,19 @@ const Home:React.FC<setting> = () => {
   const setter = (valor:string)=>{
     setTarefa(valor)
     setListaTarefa([...listaTarefa,valor])
+    modularizer([...listaTarefa])
+  }
+
+  const modularizer = (lista:string[]) =>{
+    const listaModularizada =  lista.map((item:string,index:number) =>{
+      return {
+        index:index,
+        conteudo:item,
+      }
+
+    }
+    )
+    setListaTarefa(listaModularizada)
   }
 
 
@@ -30,8 +45,8 @@ const Home:React.FC<setting> = () => {
       <div className='display-flex justify-center flex-col items-center w-[70vw]'>
         <NewTask getTarefaAdicionavel={(valor:string)=> ()=>  setter(valor)}></NewTask>
         {
-          listaTarefa.map((tarefa,index) =>{
-            return <Task key={index} conteudo={tarefa}></Task>
+          listaTarefa.map((objetoTarefa) =>{
+            return <Task key={objetoTarefa.index} conteudo={objetoTarefa.conteudo}></Task>
           })
         }
       </div>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Del } from '../delete/del'
 
 
 const nTaskStyle ={
@@ -10,6 +11,10 @@ const nTaskStyle ={
     borderRadius:"5px"
 }
 
+const organizationStyle ={
+  display:'flex',
+  
+}
 
 interface content {
     conteudo:string,
@@ -18,10 +23,11 @@ interface content {
 
 const Task:React.FC<content> = ({conteudo}) => {
   return (
-    <div>
+    <div style={organizationStyle}>
         <div style={nTaskStyle}>
         <h1>{conteudo}</h1>
         </div>
+        <Del></Del>
     </div>
   )
 }
