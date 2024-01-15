@@ -4,11 +4,14 @@ import { Del } from '../delete/del'
 
 const nTaskStyle ={
     backgroundColor:"Orange",
+    display:"flex",
+    alignItems:"center",
     border:"gray 200",
-    width:"17.8rem",
+    width:"15.8rem",
     marginTop:"1rem",
-    padding:"1.5vh",
-    borderRadius:"5px"
+    padding:"0.5vh",
+    borderRadius:"5px",
+    boxShadow: "0px 4px 8px 0px rgba(0, 0, 0, 0.5)"
 }
 
 const organizationStyle ={
@@ -27,7 +30,7 @@ const Task:React.FC<content> = ({conteudo}) => {
         <div style={nTaskStyle}>
         <h1>{conteudo}</h1>
         </div>
-        <Del></Del>
+       {/*  <Del></Del> */}
     </div>
   )
 }

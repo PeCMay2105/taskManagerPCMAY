@@ -1,37 +1,57 @@
 'use client'
 
-import React, { useState } from 'react'
-import { NewTask } from './componentes/novaTarefa'
-import Task from './componentes/newTask/task'
+  import React, { useState, useTransition } from 'react'   //useState é um hook que permite a criação de estados
+  import { NewTask } from './componentes/novaTarefa'
+  import {CSSTransition,TransitionGroup} from 'react-transition-group'
+  import Task from './componentes/newTask/task'
+  import { Del } from './componentes/delete/del'
+
+
+  const mainStyle ={
+    display:"flex",
+    width:"100vw",
+    alignItems:"center",
+  }
+
+
 
   interface setting{
     setter: (arg:string) => void
   }
 
+  interface tarefa{
+    index:number,
+    conteudo:string
+  }
 
  
 const Home:React.FC<setting> = () => {
 
   const [tarefa,setTarefa] = useState<string>("")
-  const [listaTarefa,setListaTarefa] = useState<string[]>([])
+  const [listaTarefa,setListaTarefa] = useState<tarefa[]>([])
 
 
   const setter = (valor:string)=>{
     setTarefa(valor)
-    setListaTarefa([...listaTarefa,valor])
-    modularizer([...listaTarefa])
+    modularizer([...listaTarefa,{index: listaTarefa.length, conteudo:valor}])
   }
 
-  const modularizer = (lista:string[]) =>{
-    const listaModularizada =  lista.map((item:string,index:number) =>{
+  const modularizer = (lista:tarefa[]) =>{
+    const listaModularizada =  lista.map((item:tarefa,index:number) =>{
+      console.log(index)
       return {
         index:index,
-        conteudo:item,
+        conteudo:item.conteudo,
       }
 
-    }
-    )
+    })
     setListaTarefa(listaModularizada)
+  }
+  const deleting = (index:number) =>{
+    const filteredList = listaTarefa.filter((item:tarefa) =>{
+      return item.index !== index
+    })
+    setListaTarefa(filteredList)
   }
 
 
@@ -44,11 +64,20 @@ const Home:React.FC<setting> = () => {
 
       <div className='display-flex justify-center flex-col items-center w-[70vw]'>
         <NewTask getTarefaAdicionavel={(valor:string)=> ()=>  setter(valor)}></NewTask>
+
+        <TransitionGroup>
+
         {
-          listaTarefa.map((objetoTarefa) =>{
-            return <Task key={objetoTarefa.index} conteudo={objetoTarefa.conteudo}></Task>
-          })
-        }
+          listaTarefa.map((objetoTarefa) =>
+          <CSSTransition key={objetoTarefa.index} timeout={200} transition={'opacity 200ms'} classNames="item">
+
+             <div style={mainStyle}><Task key={objetoTarefa.index} conteudo={objetoTarefa.conteudo}></Task>
+            <Del aoClicado ={(event)=>{deleting(objetoTarefa.index)}}></Del>
+            </div>
+          </CSSTransition>
+          )}
+        </TransitionGroup>
+        
       </div>
     </div>
   )
