@@ -5,9 +5,8 @@
   import {CSSTransition,TransitionGroup} from 'react-transition-group'
   import Task from './componentes/newTask/task'
   import { Del } from './componentes/delete/del'
-import { Check } from './componentes/check'
-import { Done } from './componentes/doneTask/done'
-
+  import { Check } from './componentes/check'
+  import { Done } from './componentes/doneTask/done'
 
   const mainStyle ={
     display:"flex",
@@ -32,12 +31,13 @@ const Home:React.FC<setting> = () => {
   const [tarefa,setTarefa] = useState<string>("")
   const [listaTarefa,setListaTarefa] = useState<tarefa[]>([])
   const [checked,setChecked] = useState<tarefa[]>([])
-
+  const [showHistoric,setShowHistoric] = useState<boolean>(false)
 
   const setter = (valor:string)=>{
     setTarefa(valor)
     modularizer([...listaTarefa,{index: listaTarefa.length, conteudo:valor}])
   }
+
 
   const modularizer = (lista:tarefa[]) =>{
     const listaModularizada =  lista.map((item:tarefa,index:number) =>{
@@ -78,9 +78,9 @@ const Home:React.FC<setting> = () => {
       <span className='text-3xl font-semibold uppercase'>Task Manager</span>
       <p className='text-1-xl font-sans lowercase flex justify-end flex-col'> Simple</p>
       <h1 className='text-1xl font-extrabold py 15 flex justify-end flex-col items-center '>Powered for learning</h1>
-
+      {/* {showHistoric ? listaTarefa.map((item:tarefa) => <p className='text-gl font-family:lucida-sans py 15px flex justify-center flex-col center' >{item.conteudo}</p>):null && checked.map((item:tarefa) => <p>{item.conteudo}</p>)} */}
       <div className='display-flex justify-space-between flex-col items-center w-[70vw]' style={{marginTop:'5vh'}}>
-        <NewTask getTarefaAdicionavel={(valor:string)=> ()=>{ valor != "" ? setter(valor):alert(mensagemTaskVazia)}}></NewTask>
+        <NewTask getTarefaAdicionavel={(valor:string)=> ()=>{ valor != "" ? setter(valor):alert(mensagemTaskVazia)}} Hovering = {(response:boolean)=> setShowHistoric(response)} ></NewTask>
         <p style={{display:'flex',justifyContent:'flex-start',marginTop:'5vh',fontWeight:'bold'}}>Pending</p>
         <p style={{display:'flex',justifyContent:'flex-end',fontWeight:'bold'}}>Checked</p>
         <TransitionGroup>
@@ -98,7 +98,16 @@ const Home:React.FC<setting> = () => {
           <div style={{display:'flex',justifyContent:'flex-end',flexDirection:"column",alignItems:'flex-end' }}>
             {checked.map(checkedTaskObject => <Done conteudo={checkedTaskObject.conteudo}></Done>)}
           </div>
-        
+          {showHistoric ? (
+            <div className="text-center border rounded p-4 flex-col justify-center items-center">
+              <h2>Historico</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                {checked.map((item: tarefa) => (
+                  <p className="text-gl font-family:lucida-sans py-2 text-center" style={{ border: '1px solid black', borderRadius: "12px",marginBottom:"1.5vh",backgroundColor: 'orange', opacity: 0.6, width: '25%', height:'5vh' }}>{item.conteudo}</p>
+                ))}
+              </div>
+            </div>
+          ) : null && checked.map((item: tarefa) => <p>{item.conteudo}</p>)}
       </div>
     </div>
   )
