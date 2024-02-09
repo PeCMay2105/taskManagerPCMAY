@@ -61,27 +61,68 @@ const Home:React.FC<setting> = () => {
     })
     setListaTarefa(listaModularizada)
   }
-  const deleting = (index:number) =>{
+  const deleting = async(index:number) =>{
+    console.log("Este é o indice passado para a função pelo componente"+index)
+    const request = await fetch(`http://localhost:8000/taskManager/Tasks`,{
+      method: 'DELETE',
+      headers:{
+        'Content-Type':'application/json'
+      },
+
+      body: JSON.stringify({id:index})
+
+    })
     const filteredList = listaTarefa.filter((item:tarefa) =>{
       return item.index !== index
     })
+    const response = await request.json()
+    console.log(response)
     setListaTarefa(filteredList)
   }
 
 
-  const checking = (index:number) =>{
+  const checking = async(index:number) =>{
+    console.log("Esse é o indice passado para a função pelo componente"+index)
+    const request = await fetch('http://localhost:8000/taskManager/Tasks', {
+      method : 'PUT',
+      headers:{
+        'Content-Type':'application/json'
+        
+      },
+      body: JSON.stringify({id:index, completed:true})
+    })
+
+    const response = await request.json()
+    console.log("esta é a resposta da requisição" + response)
+
     const filteredList = listaTarefa.filter((item:tarefa) =>{
       return item.index !== index
     })
+    setListaTarefa(filteredList)
     const checkedList = listaTarefa.filter((item:tarefa) =>{
       return item.index === index 
     }
     )
+   
     setChecked([...checked,checkedList[0]])
-    setListaTarefa(filteredList)
+    
   }
 
   const mensagemTaskVazia = "Não é possível adicionar uma tarefa vazia"
+
+  const postTarefas = async(conteudo:string) =>{
+    const request = await fetch('http://localhost:8000/taskManager/Tasks',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({title:conteudo,completed:false})
+    })
+    const response = await request.json()
+    console.log(response)
+  }
+
+
   const fetchTarefas = async() =>{
     const response = await fetch('http://localhost:8000/taskManager/Tasks')
     const data = await response.json()
@@ -89,13 +130,14 @@ const Home:React.FC<setting> = () => {
 
    data.forEach((item:fetchedObject) =>{
       
-      const listaTitulos = listaTarefa.map(tarefa => tarefa.conteudo)
-      const checkedTitles = checked.map(tarefa => tarefa.conteudo)
+      const listaTitulos = new Set(listaTarefa.map(tarefa => tarefa.conteudo))
+      const checkedTitles = new Set(checked.map(tarefa => tarefa.conteudo))
 
-      if (item.completed && checkedTitles.indexOf(item.title) === -1){
-        setChecked([...checked,{index:item.id,conteudo:item.title}])
-      }else if(listaTitulos.indexOf(item.title) === -1){
-        setListaTarefa([...listaTarefa,{index:item.id,conteudo:item.title}])
+      if (item.completed && !checkedTitles.has(item.title)){
+        setChecked(currentChecked => [...currentChecked,{index:item.id,conteudo:item.title}])
+        setListaTarefa(currentListaTarefa => currentListaTarefa.filter(tarefa => tarefa.conteudo !== item.title))
+      }else if(!listaTitulos.has(item.title) && !item.completed){
+        setListaTarefa(currentListaTarefa => [...currentListaTarefa,{index:item.id,conteudo:item.title}])
       }
   })
   }
@@ -115,7 +157,15 @@ const Home:React.FC<setting> = () => {
       <h1 className='text-1xl font-extrabold py 15 flex justify-end flex-col items-center '>Powered for learning</h1>
       {/* {showHistoric ? listaTarefa.map((item:tarefa) => <p className='text-gl font-family:lucida-sans py 15px flex justify-center flex-col center' >{item.conteudo}</p>):null && checked.map((item:tarefa) => <p>{item.conteudo}</p>)} */}
       <div className='display-flex justify-space-between flex-col items-center w-[70vw]' style={{marginTop:'5vh'}}>
-        <NewTask getTarefaAdicionavel={(valor:string)=> ()=>{ valor != "" ? setter(valor):alert(mensagemTaskVazia)}} Hovering = {(response:boolean)=> setShowHistoric(response)} ></NewTask>
+        <NewTask getTarefaAdicionavel={(valor:string)=> ()=>{ 
+          if(valor != ""){
+            setter(valor)
+            postTarefas(valor)
+          }else{
+            alert(mensagemTaskVazia)
+          }
+        }}
+         Hovering = {(response:boolean)=> setShowHistoric(response)} ></NewTask>
         <p style={{display:'flex',justifyContent:'flex-start',marginTop:'5vh',fontWeight:'bold'}}>Pending</p>
         <p style={{display:'flex',justifyContent:'flex-end',fontWeight:'bold'}}>Checked</p>
         <TransitionGroup>
