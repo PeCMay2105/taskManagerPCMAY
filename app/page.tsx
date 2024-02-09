@@ -1,6 +1,6 @@
 'use client'
 
-  import React, { useState, useTransition } from 'react'   //useState é um hook que permite a criação de estados
+  import React, { useState, useTransition,useEffect, use } from 'react'   //useState é um hook que permite a criação de estados
   import { NewTask } from './componentes/novaTarefa'
   import {CSSTransition,TransitionGroup} from 'react-transition-group'
   import Task from './componentes/newTask/task'
@@ -20,6 +20,12 @@
     setter: (arg:string) => void
   }
 
+
+  interface fetchedObject{
+    id:number,
+    title:string,
+    completed:boolean
+  }
   interface tarefa{
     index:number,
     conteudo:string
@@ -33,10 +39,15 @@ const Home:React.FC<setting> = () => {
   const [checked,setChecked] = useState<tarefa[]>([])
   const [showHistoric,setShowHistoric] = useState<boolean>(false)
 
+
+
   const setter = (valor:string)=>{
     setTarefa(valor)
     modularizer([...listaTarefa,{index: listaTarefa.length, conteudo:valor}])
   }
+
+  
+
 
 
   const modularizer = (lista:tarefa[]) =>{
@@ -71,10 +82,34 @@ const Home:React.FC<setting> = () => {
   }
 
   const mensagemTaskVazia = "Não é possível adicionar uma tarefa vazia"
+  const fetchTarefas = async() =>{
+    const response = await fetch('http://localhost:8000/taskManager/Tasks')
+    const data = await response.json()
+    console.log(data)
+
+   data.forEach((item:fetchedObject) =>{
+      
+      const listaTitulos = listaTarefa.map(tarefa => tarefa.conteudo)
+      const checkedTitles = checked.map(tarefa => tarefa.conteudo)
+
+      if (item.completed && checkedTitles.indexOf(item.title) === -1){
+        setChecked([...checked,{index:item.id,conteudo:item.title}])
+      }else if(listaTitulos.indexOf(item.title) === -1){
+        setListaTarefa([...listaTarefa,{index:item.id,conteudo:item.title}])
+      }
+  })
+  }
+
+  useEffect(()=>{
+    fetchTarefas()
+  
+  })
+
 
   return (
+    
     <div className='w-screen py-20 flex justify-center flex-col items-center'>
-
+        
       <span className='text-3xl font-semibold uppercase'>Task Manager</span>
       <p className='text-1-xl font-sans lowercase flex justify-end flex-col'> Simple</p>
       <h1 className='text-1xl font-extrabold py 15 flex justify-end flex-col items-center '>Powered for learning</h1>
